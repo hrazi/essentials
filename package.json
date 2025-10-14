@@ -1,0 +1,14 @@
+{
+  "name": "developer-platform-weekly-report",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Automation for generating Developer Platform weekly Azure DevOps report",
+  "license": "MIT",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "gen:weekly": "node scripts/generate-weekly-report.mjs",
+    "gen:range": "node scripts/generate-weekly-report.mjs"
+  },
+  "keywords": ["azure-devops","report","weekly","developer-platform"]
+}
