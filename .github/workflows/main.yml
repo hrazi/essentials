@@ -1,0 +1,44 @@
+name: Weekly Developer Platform Report
+
+on:
+  schedule:
+    - cron: '0 9 * * MON'   # Every Monday 09:00 UTC
+  workflow_dispatch: {}
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install (if package-lock appears later)
+        run: npm ci || npm install
+
+      - name: Generate weekly report
+        env:
+          ADO_PAT: ${{ secrets.ADO_PAT }}
+          ADO_ORG: Skype
+          ADO_PROJECT: SPOOL
+          ADO_QUERY_ID: e83a7058-c1e6-444a-b7ba-7f86e954aab6
+        run: npm run gen:weekly
+
+      - name: Commit & push (if new report)
+        run: |
+          git config user.name "weekly-report-bot"
+          git config user.email "weekly-report-bot@users.noreply.github.com"
+          if git ls-files developer_platform_weekly_report_*.html >/dev/null 2>&1; then
+            :
+          fi
+          if git status --porcelain | grep developer_platform_weekly_report_; then
+            git add developer_platform_weekly_report_*.html
+            git commit -m "chore(report): weekly report $(date -u +%Y-%m-%d)"
+            git push
+          else
+            echo "No new report to commit."
+          fi
