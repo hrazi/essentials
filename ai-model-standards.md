@@ -7,8 +7,14 @@ A comprehensive guide for defining standards across the AI model lifecycle: data
 1. [Data Collection Standards](#data-collection-standards)
 2. [Model Building Standards](#model-building-standards)
 3. [Model Measuring & Evaluation Standards](#model-measuring--evaluation-standards)
-4. [Model Maintenance Standards](#model-maintenance-standards)
-5. [Documentation & Compliance](#documentation--compliance)
+4. [Evals](#evals)
+5. [LLM-Specific Standards](#llm-specific-standards)
+6. [Cost, Latency & Infrastructure](#cost-latency--infrastructure)
+7. [Human-in-the-Loop & Feedback](#human-in-the-loop--feedback)
+8. [Agentic AI Standards](#agentic-ai-standards)
+9. [Model Risk Tiering](#model-risk-tiering)
+10. [Model Maintenance Standards](#model-maintenance-standards)
+11. [Documentation & Compliance](#documentation--compliance)
 
 ---
 
@@ -198,6 +204,260 @@ A comprehensive guide for defining standards across the AI model lifecycle: data
 
 ---
 
+## Evals
+
+### Eval Design
+
+#### Eval Types
+- [ ] Define task-specific eval categories (factuality, instruction following, tool use, refusal, safety)
+- [ ] Establish golden dataset requirements — curated prompt/response pairs with expected outputs
+- [ ] Create adversarial eval sets to stress-test edge cases and failure modes
+- [ ] Implement regression eval suites to catch degradation across model versions
+
+#### Eval Dataset Management
+- [ ] Version control all eval datasets alongside model versions
+- [ ] Define processes for adding new evals when new failure modes are discovered
+- [ ] Establish eval coverage requirements across use case categories
+- [ ] Prevent eval set contamination with training data
+
+### Automated Evals
+
+#### Eval Frameworks
+- [ ] Select and standardize eval frameworks (e.g., promptfoo, inspect, LangSmith, OpenAI Evals)
+- [ ] Integrate evals into CI/CD — block deploys on eval regression
+- [ ] Define pass/fail thresholds per eval category
+- [ ] Log all eval runs with model version, dataset version, and scores
+
+#### LLM-as-Judge
+- [ ] Define when LLM-as-judge is appropriate vs. deterministic scoring
+- [ ] Document judge model selection criteria and known biases
+- [ ] Implement calibration checks — compare judge scores to human ratings
+- [ ] Version and audit judge prompts alongside eval datasets
+
+### Human Evals
+
+#### Human Rating
+- [ ] Define human eval cadence (per release, per major change, periodic)
+- [ ] Establish inter-rater reliability requirements
+- [ ] Create rating rubrics per eval dimension
+- [ ] Implement preference comparison (A vs. B) alongside absolute scoring
+
+#### Eval Coverage
+- [ ] Map eval coverage to product use cases — identify gaps
+- [ ] Track eval coverage metrics over time
+- [ ] Establish minimum coverage thresholds before production deployment
+- [ ] Create process for translating production incidents into new evals
+
+---
+
+## LLM-Specific Standards
+
+### Prompt Engineering
+
+#### Prompt Governance
+- [ ] Version control all system prompts and prompt templates
+- [ ] Establish prompt review and approval workflow before deployment
+- [ ] Document intended behavior and known limitations per prompt version
+- [ ] Create rollback procedures for prompt changes
+
+#### Prompt Design Standards
+- [ ] Define few-shot example selection criteria and formatting standards
+- [ ] Establish context window management guidelines
+- [ ] Create prompt testing requirements before production use
+- [ ] Document prompt sensitivity — measure output variance across paraphrased inputs
+
+### Retrieval Augmented Generation (RAG)
+
+#### Retrieval Quality
+- [ ] Define retrieval relevance metrics (MRR, NDCG, recall@k)
+- [ ] Establish chunking strategy standards — size, overlap, structure-awareness
+- [ ] Implement retrieval evaluation separate from generation evaluation
+- [ ] Create embedding model selection and update criteria
+
+#### RAG Pipeline Standards
+- [ ] Define context window allocation between retrieval and generation
+- [ ] Establish citation and source attribution requirements
+- [ ] Implement retrieval failure handling — what happens when nothing relevant is found
+- [ ] Monitor retrieval latency and quality separately from end-to-end latency
+
+### Fine-Tuning
+
+#### Fine-Tuning Decision Framework
+- [ ] Define criteria for when to fine-tune vs. prompt engineer vs. RAG
+- [ ] Establish minimum data requirements for fine-tuning
+- [ ] Document alignment risks introduced by fine-tuning
+- [ ] Require base model capability comparison before and after fine-tuning
+
+#### Fine-Tuning Standards
+- [ ] Standardize fine-tuning techniques (full fine-tune, LoRA, QLoRA, PEFT)
+- [ ] Define training data quality requirements specific to fine-tuning
+- [ ] Implement catastrophic forgetting evaluation post fine-tune
+- [ ] Establish fine-tuned model versioning separate from base model versioning
+
+### Hallucination & Groundedness
+
+#### Detection
+- [ ] Define hallucination categories (factual, temporal, citation, reasoning)
+- [ ] Implement automated hallucination detection in eval pipelines
+- [ ] Establish acceptable hallucination rate thresholds per use case
+- [ ] Monitor hallucination rates in production via sampling
+
+#### Mitigation
+- [ ] Implement grounding checks — verify outputs against source material
+- [ ] Define citation accuracy requirements for RAG outputs
+- [ ] Create uncertainty signaling standards — model should express doubt appropriately
+- [ ] Establish human review triggers when confidence is low
+
+### Safety & Alignment
+
+#### Red-Teaming
+- [ ] Conduct structured red-teaming before major model releases
+- [ ] Define red-team scope — jailbreaks, prompt injection, harmful content, bias
+- [ ] Document and track red-team findings and mitigations
+- [ ] Establish ongoing adversarial testing cadence post-deployment
+
+#### Safety Metrics
+- [ ] Define refusal rate targets — balance safety with helpfulness
+- [ ] Implement toxicity, bias, and harmful content detection in evals
+- [ ] Establish over-refusal monitoring — track false positive refusals
+- [ ] Create safety regression tests to catch alignment drift across versions
+
+---
+
+## Cost, Latency & Infrastructure
+
+### Cost Standards
+
+#### Token & Compute Budgets
+- [ ] Define token budget limits per request type
+- [ ] Establish cost-per-query targets and alerting thresholds
+- [ ] Implement token usage tracking per feature and user segment
+- [ ] Create cost attribution reporting by model, feature, and team
+
+#### Cost Optimization
+- [ ] Define criteria for model downsizing — when a smaller model is sufficient
+- [ ] Implement prompt caching where supported
+- [ ] Establish batching strategies for non-real-time workloads
+- [ ] Monitor cost trends and set budget alerting
+
+### Latency & SLA
+
+#### Performance Requirements
+- [ ] Define p50, p95, p99 latency targets per use case
+- [ ] Establish time-to-first-token (TTFT) requirements for streaming use cases
+- [ ] Create latency regression tests as part of CI
+- [ ] Implement latency monitoring dashboards in production
+
+#### Degraded Mode Handling
+- [ ] Define fallback behavior when latency SLAs are breached
+- [ ] Establish timeout policies and graceful failure responses
+- [ ] Implement circuit breakers for downstream model API dependencies
+- [ ] Create load shedding strategies for traffic spikes
+
+### Shadow Mode Evaluation
+
+#### Pre-Production Testing
+- [ ] Run new model versions in shadow mode against live production traffic
+- [ ] Define shadow mode duration and traffic percentage requirements
+- [ ] Compare shadow outputs to production outputs using automated evals
+- [ ] Establish promotion criteria from shadow to canary to full rollout
+
+---
+
+## Human-in-the-Loop & Feedback
+
+### Human Review
+
+#### Review Triggers
+- [ ] Define confidence thresholds below which human review is required
+- [ ] Establish review requirements for high-risk output categories
+- [ ] Implement sampling-based review for production outputs
+- [ ] Create escalation paths for ambiguous or sensitive outputs
+
+#### Review Workflows
+- [ ] Define reviewer qualifications and training requirements
+- [ ] Establish review turnaround time SLAs
+- [ ] Create structured review interfaces with consistent rating rubrics
+- [ ] Implement reviewer calibration and quality checks
+
+### User Feedback Loops
+
+#### Feedback Collection
+- [ ] Implement explicit feedback mechanisms (thumbs up/down, corrections, flags)
+- [ ] Define implicit feedback signals (regeneration, editing, abandonment)
+- [ ] Establish feedback data storage and privacy requirements
+- [ ] Create feedback routing — surface critical feedback to model teams quickly
+
+#### Feedback to Training
+- [ ] Define processes for incorporating user feedback into training data
+- [ ] Establish quality filters before feedback enters training pipelines
+- [ ] Track which feedback has been actioned and its impact on model behavior
+- [ ] Create preference data collection procedures for RLHF/DPO
+
+---
+
+## Agentic AI Standards
+
+### Agent Design
+
+#### Capability Scoping
+- [ ] Define explicit tool and action permissions per agent
+- [ ] Establish principle of least privilege — agents request only necessary permissions
+- [ ] Document agent decision boundaries and escalation conditions
+- [ ] Create agent capability documentation for stakeholders
+
+#### Planning & Reasoning
+- [ ] Define acceptable planning depth and step limits
+- [ ] Implement plan validation before execution for irreversible actions
+- [ ] Establish reasoning trace logging for auditability
+- [ ] Create interruption and override mechanisms for long-running agents
+
+### Agent Safety
+
+#### Action Validation
+- [ ] Classify all agent actions by reversibility and blast radius
+- [ ] Require human confirmation for irreversible or high-impact actions
+- [ ] Implement sandboxing for agents with system access
+- [ ] Create action audit logs with full context
+
+#### Failure Modes
+- [ ] Define agent failure categories (loop, hallucinated action, permission error)
+- [ ] Implement automatic termination conditions for stuck or looping agents
+- [ ] Establish retry limits and backoff policies for failed actions
+- [ ] Create post-failure reporting and root cause analysis procedures
+
+### Multi-Agent Systems
+- [ ] Define trust levels between agents in multi-agent pipelines
+- [ ] Establish prompt injection defenses for agent-to-agent communication
+- [ ] Implement observability across full agent chains
+- [ ] Define ownership and accountability when multiple agents contribute to an output
+
+---
+
+## Model Risk Tiering
+
+### Risk Classification
+
+#### Tier Definitions
+- [ ] Define risk tiers (e.g., Tier 1: internal tooling, Tier 2: customer-facing, Tier 3: high-stakes decisions)
+- [ ] Establish classification criteria — impact scope, reversibility, regulatory exposure
+- [ ] Assign risk tiers to all deployed models and use cases
+- [ ] Review and update risk tier assignments regularly
+
+#### Tier-Based Requirements
+- [ ] Map eval, review, and monitoring requirements to each risk tier
+- [ ] Establish deployment approval requirements by tier (automated vs. human sign-off)
+- [ ] Define incident response SLAs per risk tier
+- [ ] Create escalation paths based on risk tier
+
+### Regulatory & Ethical Risk
+- [ ] Identify use cases subject to regulatory requirements (healthcare, finance, hiring, legal)
+- [ ] Establish compliance review gates for high-risk use cases
+- [ ] Implement bias audits for models used in consequential decisions
+- [ ] Create documentation requirements for regulatory defensibility
+
+---
+
 ## Model Maintenance Standards
 
 ### Model Monitoring
@@ -349,6 +609,11 @@ A comprehensive guide for defining standards across the AI model lifecycle: data
 - **Model Versioning**: MLflow, Weights & Biases, Neptune
 - **Monitoring**: Evidently AI, Fiddler, Arize
 - **Testing**: Great Expectations, Deepchecks, pytest
+- **Evals**: promptfoo, inspect, LangSmith, OpenAI Evals, Braintrust
+- **RAG**: LlamaIndex, LangChain, Weaviate, Pinecone, pgvector
+- **Fine-Tuning**: Hugging Face PEFT, Axolotl, Unsloth
+- **Agent Frameworks**: LangGraph, AutoGen, CrewAI, Semantic Kernel
+- **Safety & Red-Teaming**: Garak, PyRIT, LLM Guard
 
 ---
 
