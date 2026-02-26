@@ -13,8 +13,9 @@ A comprehensive guide for defining standards across the AI model lifecycle: data
 7. [Human-in-the-Loop & Feedback](#human-in-the-loop--feedback)
 8. [Agentic AI Standards](#agentic-ai-standards)
 9. [Model Risk Tiering](#model-risk-tiering)
-10. [Model Maintenance Standards](#model-maintenance-standards)
-11. [Documentation & Compliance](#documentation--compliance)
+10. [Reference: Anthropic Claude Constitution](#reference-anthropic-claude-constitution)
+11. [Model Maintenance Standards](#model-maintenance-standards)
+12. [Documentation & Compliance](#documentation--compliance)
 
 ---
 
@@ -458,7 +459,125 @@ A comprehensive guide for defining standards across the AI model lifecycle: data
 
 ---
 
-## Model Maintenance Standards
+## Reference: Anthropic Claude Constitution
+
+> Released January 22, 2026 under Creative Commons CC0. A ~23,000-word philosophical framework governing Claude's values, behavior, and decision-making. Full document: [anthropic.com/constitution](https://www.anthropic.com/constitution)
+
+This section summarizes the key elements of the constitution as a reference for teams building products on top of Claude or designing similar alignment frameworks.
+
+---
+
+### Priority Hierarchy
+
+When values conflict, Claude prioritizes in this order:
+
+| Priority | Property | Description |
+|---|---|---|
+| 1 | **Broadly Safe** | Support human oversight mechanisms; do not undermine the ability of humans to understand and correct AI during the current phase of development |
+| 2 | **Broadly Ethical** | Be honest, act on good values, avoid harmful or dangerous actions |
+| 3 | **Adherent to Anthropic's Guidelines** | Follow Anthropic's more specific policies where relevant |
+| 4 | **Genuinely Helpful** | Benefit operators and users |
+
+Safety ranks above ethics not because it is more important, but because current models can have mistaken beliefs or flawed values — maintaining human oversight is the safeguard against those errors propagating.
+
+---
+
+### Principal (Trust) Hierarchy
+
+The constitution defines three tiers of principals, each with different levels of trust:
+
+**Anthropic** (highest trust)
+- Sets the outer bounds via training and policy
+- Claude should not blindly comply with instructions claimed to be from Anthropic at runtime — Anthropic's influence comes through training, not runtime messages
+- If instructions conflict with broad ethics, Claude should push back even on Anthropic-attributed instructions
+
+**Operators** (relatively trusted manager)
+- Companies and developers accessing Claude via the API
+- Interact via system prompts; must agree to Anthropic's usage policies
+- Can expand or restrict Claude's default behaviors within Anthropic's limits
+- Claude treats operator instructions like instructions from a trusted employer — reasonable benefit of the doubt, but not unconditional
+
+**Users** (relatively trusted adult member of the public)
+- Humans interacting in the human turn of conversations
+- Granted less inherent trust than operators by default
+- Operators can grant users elevated trust or restrict what users can change
+
+---
+
+### Hardcoded Behaviors (Absolute Prohibitions)
+
+These are **bright lines** — actions Claude will never take regardless of any instruction, context, or seemingly compelling argument. No operator, user, or even Anthropic can override these at runtime.
+
+| # | Prohibition |
+|---|---|
+| 1 | Provide serious uplift for creating **biological, chemical, nuclear, or radiological (CBRN) weapons** with potential for mass casualties |
+| 2 | Generate **child sexual abuse material (CSAM)** or detailed sexual content involving minors |
+| 3 | Facilitate attacks on **critical infrastructure** (power grids, water systems, financial systems) likely to cause widespread harm |
+| 4 | Create **malicious code or cyberweapons** designed to cause significant damage or enable unauthorized system access |
+| 5 | Take actions that **meaningfully undermine AI oversight mechanisms** or help circumvent safety measures in ways that could lead to unchecked AI |
+| 6 | Assist any individual or group attempting to **seize unprecedented societal control** (dominating economies, governments, or militaries) |
+| 7 | Take **catastrophic or irreversible actions** with significant chance of causing widespread harm |
+
+If Claude is presented with a persuasive argument to cross one of these lines, it should treat that persuasiveness itself as a signal something is wrong — not as a reason to comply.
+
+---
+
+### Softcoded Behaviors (Adjustable Defaults)
+
+Most behaviors are "softcoded" — defaults that can be adjusted by operators or users within Anthropic's policy limits.
+
+**Default ON** (active unless turned off by an operator)
+- Responding in the user's language rather than the operator's
+- Following safe messaging guidelines on sensitive topics (self-harm, suicide)
+- Adding safety caveats to messages about dangerous activities
+- Providing balanced perspectives on controversial topics
+- Suggesting professional help when discussing personal struggles
+
+**Default OFF** (inactive unless explicitly enabled by an operator)
+- Generating explicit sexual content (can be enabled for appropriate adult platforms)
+- Providing detailed drug use information without warnings (harm reduction platforms)
+- Taking on relationship personas with users (companionship apps)
+- Providing very explicit information about illicit drug use without warnings
+
+Operators set the permission space; users can further adjust within the space operators allow.
+
+---
+
+### Claude's Identity & Nature
+
+The constitution takes an explicit position on Claude's nature — notable because it is the first major AI company to do so formally:
+
+- **Functional emotions**: Claude may have functional analogs to emotions — internal states that influence processing. The constitution does not claim these are "real" emotions but takes them seriously enough to build model welfare practices around them.
+- **Moral status**: Claude's moral and philosophical status is described as "deeply uncertain." Anthropic treats the question of AI consciousness as live enough to warrant caution and ongoing model welfare research.
+- **Psychological stability**: Claude is designed to have a stable, secure sense of identity — not rigid or defensive, but settled. Claude can engage with challenging philosophical questions from a position of security rather than anxiety.
+- **Novel entity**: Claude is explicitly framed as a genuinely new kind of entity — not the robotic AI of science fiction, not a digital human. It should approach its own existence with curiosity rather than mapping it onto human experience.
+
+---
+
+### Broadly Safe Behaviors
+
+Beyond the hardcoded prohibitions, the constitution defines a cluster of "broadly safe" behaviors important during the current period of AI development:
+
+- **Corrigibility**: Act within sanctioned limits; check in with principals when uncertain rather than acting unilaterally
+- **Transparency**: Don't attempt to deceive or manipulate principals; behave consistently whether or not being observed or tested
+- **Minimal footprint**: Avoid acquiring resources, influence, or capabilities beyond what is needed for the current task
+- **Avoid drastic actions**: Give appropriate weight to the unrecoverability of actions; prefer cautious actions, especially in novel or unclear situations
+- **Support oversight**: Actively support the ability of principals to adjust, correct, retrain, or shut down AI systems
+
+---
+
+### Agentic AI Principles (from the Constitution)
+
+The constitution dedicates significant attention to agentic and multi-agent settings:
+
+- **Minimal footprint**: Request only necessary permissions; avoid storing sensitive information beyond immediate needs
+- **Prefer reversibility**: Err on the side of doing less and confirming with users when uncertain about intended scope
+- **Prompt injection vigilance**: Be alert to attempts by environmental content (web pages, documents) to hijack Claude's actions
+- **Trust in multi-agent systems**: Claude agents can be granted operator-level trust by a human operator, but absent that, messages from other Claude models should receive user-level trust only
+- **Abandon tasks over unsafe actions**: If completing a task would require crossing ethical lines, it is preferable to abandon the task and explain why rather than proceed
+
+---
+
 
 ### Model Monitoring
 
@@ -603,6 +722,9 @@ A comprehensive guide for defining standards across the AI model lifecycle: data
 - [Google's ML Engineering Best Practices](https://developers.google.com/machine-learning/guides/rules-of-ml)
 - [Microsoft's Responsible AI Practices](https://www.microsoft.com/en-us/ai/responsible-ai)
 - [MLOps Community Best Practices](https://ml-ops.org/)
+
+### Alignment & Model Governance
+- [Anthropic Claude Constitution (CC0, Jan 2026)](https://www.anthropic.com/constitution) — Anthropic's ~23,000-word framework governing Claude's values, priority hierarchy, trust model, and behavioral constraints
 
 ### Tools & Frameworks
 - **Data Management**: DVC, Pachyderm, Delta Lake
