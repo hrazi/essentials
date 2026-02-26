@@ -15,3 +15,12 @@ Link: https://htezigeg.manus.space/
 
 # Life Dashboard
 Link: https://life-track-pro.replit.app/
+
+# Essentials
+A collection of developer templates, standards, and automation tooling.
+Link: https://github.com/hrazi/essentials
+
+## Resources
+- [PM Specification Template](./PM-Spec.md) — Functional spec template covering requirements, architecture, testing, and risk assessment
+- [AI Model Standards](./ai-model-standards.md) — Standards guide for AI model lifecycle management
+- [ADO Weekly Report Generator](./ado/scripts/generate-weekly-report.mjs) — Automated Azure DevOps weekly report generation via GitHub Actions
